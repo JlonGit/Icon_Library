@@ -1,0 +1,26 @@
+{
+    "name": "MyIconLibrary",
+    "description": "A custom icon library for my personal use.",
+    "icons": [
+        {
+            "name": "bilibili",
+            "url": "https://raw.githubusercontent.com/JlonGit/Icon_Library/main/icons/bilibili.png"
+        },
+        {
+            "name": "jyule",
+            "url": "https://raw.githubusercontent.com/JlonGit/Icon_Library/main/icons/jyule.jpg"
+        },
+        {
+            "name": "perplexity",
+            "url": "https://raw.githubusercontent.com/JlonGit/Icon_Library/main/icons/perplexity.jpg"
+        },
+        {
+            "name": "youtube",
+            "url": "https://raw.githubusercontent.com/JlonGit/Icon_Library/main/icons/youtube.png"
+        },
+        {
+            "name": "jlon",
+            "url": "https://raw.githubusercontent.com/JlonGit/Icon_Library/main/icons/jlon.jpg"
+        }
+    ]
+}
