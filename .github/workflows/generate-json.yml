@@ -3,40 +3,61 @@ name: Generate Icons JSON
 on:
   push:
     paths:
-      - icons/**  # 监听 icons 文件夹的更改
+      - icons/**  # 当 icons 文件夹内容有变化时触发工作流
+  workflow_dispatch:  # 支持手动触发
 
 jobs:
   generate-json:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
 
-    - name: Generate JSON file
-      run: |
-        python <<EOF
-        import os, json
-        folder_path = "icons"
-        base_url = "https://raw.githubusercontent.com/${{ github.repository }}/main/icons/"
-        data = {"name": "MyIconLibrary", "description": "A custom icon library for my personal use.", "icons": []}
-        for filename in os.listdir(folder_path):
-            if filename.endswith(".png") or filename.endswith(".svg"):
-                icon_name = os.path.splitext(filename)[0]
-                icon_url = f"{base_url}{filename}"
-                data["icons"].append({"name": icon_name, "url": icon_url})
-        with open("icons.json", "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=4, ensure_ascii=False)
-        EOF
+      - name: Generate JSON file
+        run: |
+          python <<EOF
+          import os
+          import json
 
-    - name: Commit and Push JSON file
-      run: |
-        git config user.name "GitHub Actions"
-        git config user.email "actions@github.com"
-        git add icons.json
-        git commit -m "Auto-generate icons.json"
-        git push
+          # 配置文件夹路径和 GitHub 基础 URL
+          folder_path = "icons"
+          base_url = "https://raw.githubusercontent.com/${{ github.repository }}/main/icons/"
+
+          # 初始化 JSON 数据结构
+          data = {
+              "name": "MyIconLibrary",
+              "description": "A custom icon library for my personal use.",
+              "icons": []
+          }
+
+          # 遍历文件夹中的图标文件，支持 png, jpg, gif, svg
+          for filename in os.listdir(folder_path):
+              if filename.endswith((".png", ".jpg", ".gif", ".svg")):
+                  icon_name = os.path.splitext(filename)[0]
+                  icon_url = f"{base_url}{filename}"
+                  data["icons"].append({
+                      "name": icon_name,
+                      "url": icon_url
+                  })
+
+          # 输出到 icons.json 文件
+          with open("icons.json", "w", encoding="utf-8") as f:
+              json.dump(data, f, indent=4, ensure_ascii=False)
+
+          print("icons.json 文件已生成！")
+          EOF
+
+      - name: Commit and Push JSON file
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add icons.json
+          git commit -m "Auto-generate icons.json" || echo "No changes to commit"
+          git push
